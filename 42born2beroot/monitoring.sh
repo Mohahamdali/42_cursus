@@ -9,6 +9,7 @@ cpu_usage=$(top -b -n 1 | grep  "Cpu(s)" | awk '{printf "%.1f%%",($2 + $4)}')
 last_boot=$(who -b | awk '{print $3, $4}')
 numbre_connections=$(ss -t | wc -l)
 count_users=$(who  | wc -l)
+s_cmd=$(grep -c "sudo" ~/,bash_history)
 check_vgm (){
 if lsblk -o NAME,TYPE | grep -q "lvm";then
         echo "yes"
@@ -36,6 +37,7 @@ echo "#LVM use: $(check_vgm)"
 echo "#Connections TCP: $numbre_connections ESTABLISHED"
 echo "#User log: $count_users"
 echo "#Network: IP $(print_ip_mac)"
+echo"#Sudo: $s_cmd cmd"
 }
 
 while true; do
