@@ -10,8 +10,7 @@ last_boot=$(who -b | awk '{print $3, $4}')
 numbre_connections=$(ss -t | wc -l)
 count_users=$(who  | wc -l)
 check_vgm (){
-vg_count=$(vgs --noheadings | wc -l)
-if [ "$vg_count" -gt 0 ]; then
+if lsblk -o NAME,TYPE | grep -q "lvm";then
         echo "yes"
 else
         echo "no"
