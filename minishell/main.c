@@ -6,20 +6,12 @@
 /*   By: mhamdali <mhamdali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:18:37 by mhamdali          #+#    #+#             */
-/*   Updated: 2025/04/10 16:39:49 by mhamdali         ###   ########.fr       */
+/*   Updated: 2025/04/11 15:56:19 by mhamdali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "minishell.h"
-
-extern char **environ;
-
-
-char **split_command(char *command)
-{
-   return (ft_split(command,' '));
-}
 
 void clear_pointer (char **srv)
 {
@@ -35,42 +27,40 @@ void clear_pointer (char **srv)
    free(srv);
 }
 
-void  check_command (char *path, char *command)
+void  extrenal_command (char *path, t_command *command)
 {
    pid_t child = fork();
    int i = 0;
    char *test;
    char **src = ft_split(path,':');
-   char **args = split_command(command);
+
    if (child == 0)
    {
+      
       while (src[i])
       {
          char *fullpath = ft_strjoin (src[i],"/");
-         test = ft_strjoin (fullpath, args[0]);
+         test = ft_strjoin (fullpath, command ->args[0]);
          free(fullpath);
          if (access(test,F_OK) == 0)
-         {
-            execve(test, args, NULL);
-         }
+            execve(test, command ->args, NULL);
          free(test);
          i++;
       }
-      printf("command not found: %s\n",command);
+      printf("command not found: %s\n",command ->args[0]);
       exit(1);
    }
    else
-      wait(NULL);
+      waitpid(-1,NULL,0);
    clear_pointer(src);
 }
 
 int main ()
 {
-   char *command = readline ("minichell$ ");
-   char *path = getenv("PATH");
-   if (path)
-      check_command(path,command);
-   else
-      printf("PATH NOT FOUND\n");
-
+   t_command *command = malloc(sizeof(t_command));
+   command ->args = malloc(sizeof(char *) * 4);
+   command ->args[0] = "exit";
+   command ->args[1] = "";
+   command ->args[2] = NULL;
+   execution(command);
 }
